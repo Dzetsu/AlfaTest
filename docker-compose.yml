@@ -1,0 +1,50 @@
+﻿services:
+  
+  kafka:
+    image: apache/kafka:latest
+    container_name: alfa-kafka
+    hostname: kafka 
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://kafka:29093
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:29093
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+    
+  alfa-service:
+    image: alfa-test
+    build:
+      context: .
+      dockerfile: AlfaTest/Dockerfile
+    depends_on:
+      - kafka
+    environment:
+      BOOTSTRAP_SERVERS: kafka:29092
+  
+  clickhouse:
+    image: clickhouse/clickhouse-server
+    hostname: clickhouse
+    container_name: clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+      - "./clickhouse/init.sql:/docker-entrypoint-initdb.d/init.sql"
+      - "./clickhouse/users.xml:/etc/clickhouse-server/users.xml"
+      - clickhouse-config:/etc/clickhouse-server
+      - ./clickhouse/logs:/var/log/clickhouse-server/
+  
+  
+volumes:
+  clickhouse-data:
+  clickhouse-config:

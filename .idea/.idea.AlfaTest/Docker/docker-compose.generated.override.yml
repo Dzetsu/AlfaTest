@@ -1,0 +1,21 @@
+# This is a generated file. Not intended for manual editing.
+services:
+  alfa-service:
+    build:
+      context: "F:\\IT projects\\programms\\AlfaTest"
+      dockerfile: "AlfaTest/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net7.0/AlfaTest.dll"
+    environment:
+      DOTNET_ENVIRONMENT: "Development"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "alfa-test:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\Dzetsu\\.nuget\\packages:/root/.nuget/packages"
+    - "F:\\IT projects\\programms\\AlfaTest\\AlfaTest:/app:rw"
+    - "F:\\IT projects\\programms\\AlfaTest:/src:rw"
+    working_dir: "/app"
